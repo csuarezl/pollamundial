@@ -21,13 +21,20 @@ TEAM_TRANSLATE = {
     "Mexico": "México", "Ecuador": "Ecuador",
     "England": "Inglaterra", "DR Congo": "RD del Congo", "Congo DR": "RD del Congo",
     "Belgium": "Bélgica", "Senegal": "Senegal",
-    "United States": "Estados Unidos", "Bosnia and Herzegovina": "Bosnia", "Bosnia & Herzegovina": "Bosnia",
+    "United States": "Estados Unidos", "Bosnia and Herzegovina": "Bosnia", "Bosnia & Herzegovina": "Bosnia", "Bosnia-Herzegovina": "Bosnia",
     "Spain": "España", "Austria": "Austria",
     "Portugal": "Portugal", "Croatia": "Croacia",
     "Switzerland": "Suiza", "Algeria": "Argelia",
     "Australia": "Australia", "Egypt": "Egipto",
     "Argentina": "Argentina", "Cape Verde": "Cabo Verde",
     "Colombia": "Colombia", "Ghana": "Ghana",
+    # Equipos adicionales que aparecen en la fase de grupos (no en 16avos, pero por si acaso)
+    "South Korea": "Corea del Sur", "Czechia": "Chequia", "Turkey": "Turquía",
+    "Curaçao": "Curazao", "Haiti": "Haití", "Scotland": "Escocia",
+    "Iraq": "Irak", "Jordan": "Jordania", "Panama": "Panamá",
+    "Uzbekistan": "Uzbekistán", "Tunisia": "Túnez", "Qatar": "Catar",
+    "Saudi Arabia": "Arabia Saudita", "New Zealand": "Nueva Zelanda",
+    "Uruguay": "Uruguay",
 }
 
 def translate(name):
@@ -47,6 +54,8 @@ def main():
 
     results = {}
     for match in all_matches:
+        if match.get("stage") != "LAST_16":
+            continue
         status = match.get("status")
         if status != "FINISHED":
             continue
@@ -67,12 +76,12 @@ def main():
                 continue  # sin definir aún
         key = f"{home}|{away}"
         results[key] = winner
-        print(f"Partido finalizado: {key} -> ganador: {winner}")
+        print(f"16avo finalizado: {key} -> ganador: {winner}")
 
     with open("resultados.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 
-    print(f"Guardado {len(results)} resultados en total.")
+    print(f"Guardado {len(results)} resultados de 16avos.")
 
 if __name__ == "__main__":
     main()
