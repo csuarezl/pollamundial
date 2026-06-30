@@ -95,7 +95,6 @@
 </div>
 
 <div class="panel" id="tab-partidos">
-  <div class="admin-note">✏️ Solo el administrador actualiza resultados</div>
   <div id="mcontainer"></div>
 </div>
 
@@ -133,18 +132,21 @@ const PREDICTIONS = {
 };
 
 let results = {};
-try { const s = localStorage.getItem('polla26_results'); if(s) results = JSON.parse(s); } catch(e){}
-// Resultado conocido: Brasil ganó
-if (!results[2]) results[2] = { winner: 'Brasil' };
 
-function saveResults() {
-  try { localStorage.setItem('polla26_results', JSON.stringify(results)); } catch(e) {}
-}
-
-function setResult(mid, winner) {
-  if (winner === '') { delete results[mid]; }
-  else { results[mid] = { winner }; }
-  saveResults();
+// Carga automática de resultados desde resultados.json (actualizado por GitHub Actions cada hora)
+async function loadResults() {
+  try {
+    const res = await fetch('resultados.json?t=' + Date.now()); // evita caché
+    if (!res.ok) throw new Error('no encontrado todavía');
+    const raw = await res.json();
+    results = {};
+    MATCHES.forEach(m => {
+      const key = `${m.home}|${m.away}`;
+      if (raw[key]) results[m.id] = { winner: raw[key] };
+    });
+  } catch (e) {
+    console.log('Aún no hay resultados.json o falló la carga:', e);
+  }
   renderAll();
 }
 
@@ -223,7 +225,7 @@ function renderM() {
           <span class="match-num">${m.id}</span>
           <span class="match-title">${m.home} vs ${m.away}</span>
           <span class="match-time">${m.time}</span>
-          ${done ? `<span class="result-pill">✓ ${res.winner}</span>` : ''}
+          ${done?`<span class="result-pill">✓ ${res.winner}</span>`:`<span class="result-pill" style="background:#f0f0f0;color:#999">⏳ pendiente</span>`}
         </div>
         <div class="preds-grid">
           ${PARTICIPANTS.map(name => {
@@ -241,14 +243,6 @@ function renderM() {
             </div>`;
           }).join('')}
         </div>
-        <div class="result-section">
-          <span class="result-lbl">Resultado:</span>
-          <select class="winner-select" onchange="setResult(${m.id}, this.value)">
-            <option value="">— sin resultado —</option>
-            <option value="${m.home}" ${res.winner===m.home?'selected':''}>${m.home} gana</option>
-            <option value="${m.away}" ${res.winner===m.away?'selected':''}>${m.away} gana</option>
-          </select>
-        </div>
       </div>`;
     }).join('')}
   `).join('');
@@ -261,7 +255,8 @@ function switchTab(name, e) {
   document.getElementById('tab-' + name).classList.add('active');
 }
 
-renderAll();
+loadResults();
+setInterval(loadResults, 5 * 60 * 1000); // refresca cada 5 min mientras la página está abierta
 </script>
 </body>
 </html>
