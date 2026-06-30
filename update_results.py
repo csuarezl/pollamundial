@@ -48,9 +48,12 @@ def main():
     all_matches = data.get("matches", [])
     print(f"Total de partidos recibidos de la API: {len(all_matches)}")
 
-    # Diagnóstico: mostrar las etapas (stage) que existen realmente
-    stages_found = sorted(set(m.get("stage", "SIN_STAGE") for m in all_matches))
-    print(f"Etapas (stage) encontradas en la API: {stages_found}")
+    last16_matches = [m for m in all_matches if m.get("stage") == "LAST_16"]
+    print(f"Partidos en LAST_16: {len(last16_matches)}")
+    for m in last16_matches:
+        home = translate(m["homeTeam"]["name"])
+        away = translate(m["awayTeam"]["name"])
+        print(f"  - {home} vs {away} | status: {m.get('status')} | winner: {m.get('score',{}).get('winner')}")
 
     results = {}
     for match in all_matches:
