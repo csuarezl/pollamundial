@@ -72,6 +72,12 @@
   .admin-note { background: #fff3e0; border-radius: 12px; padding: 10px 14px; margin-bottom: 1rem; font-size: 12px; color: #e65100; text-align: center; }
 
   .footer { text-align: center; padding: 2rem 1rem; font-size: 11px; color: #aaa; }
+  .banner { background: linear-gradient(135deg, #1a1a2e, #0f3460); color: white; text-align: center; padding: 1.5rem 1rem; margin: 1rem auto; max-width: 480px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .banner .trofeo { font-size: 48px; margin-bottom: 0.5rem; }
+  .banner h2 { font-size: 17px; font-weight: 700; color: #f0c040; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .banner .sub { font-size: 12px; opacity: 0.7; margin-bottom: 1rem; }
+  .banner .chips { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .banner .chip { background: #f0c040; color: #1a1a2e; font-weight: 700; font-size: 15px; padding: 8px 18px; border-radius: 99px; }
 </style>
 </head>
 <body>
@@ -98,6 +104,7 @@
   <div id="mcontainer"></div>
 </div>
 
+<div id="banner-container"></div>
 <div class="footer">Polla familiar · Copa Mundial FIFA 2026</div>
 
 <script>
@@ -161,9 +168,29 @@ function calcPts(name) {
   return { pts, played };
 }
 
+function renderBanner() {
+  const c = document.getElementById('banner-container');
+  const played = MATCHES.filter(m => results[m.id]?.winner).length;
+  if (played < 15) { c.innerHTML = ''; return; }
+  const rows = PARTICIPANTS.map(n => { const {pts} = calcPts(n); return {name:n, pts}; }).sort((a,b) => b.pts - a.pts);
+  const maxPts = rows[0].pts;
+  const ganadores = rows.filter(r => r.pts === maxPts);
+  const esEmpate = ganadores.length > 1;
+  c.innerHTML = `
+    <div class="banner">
+      <div class="trofeo">🏆</div>
+      <h2>${esEmpate ? '¡Empate en el primer lugar!' : '¡Ganador de la polla!'}</h2>
+      <div class="sub">${maxPts} puntos de 15 partidos</div>
+      <div class="chips">
+        ${ganadores.map(g => `<div class="chip">🥇 ${g.name}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
 function renderAll() {
   renderS();
   renderM();
+  renderBanner();
 }
 
 function renderS() {
