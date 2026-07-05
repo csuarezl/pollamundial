@@ -145,7 +145,7 @@ function render() {
 
   const byDate = {};
   MATCHES.forEach(m => { if(!byDate[m.date]) byDate[m.date]=[]; byDate[m.date].push(m); });
-  document.getElementById('tab-partidos').innerHTML = ['5 jul','6 jul','7 jul','8 jul'].filter(d=>byDate[d]).map(date=>`
+  document.getElementById('tab-partidos').innerHTML = ['Sáb 4 jul','Dom 5 jul','Lun 6 jul','Mar 7 jul'].filter(d=>byDate[d]).map(date=>`
     <div class="date-label">📅 ${date}</div>
     ${byDate[date].map(m=>{
       const winner=RESULTS[m.id];
