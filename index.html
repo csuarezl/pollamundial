@@ -152,7 +152,7 @@ function render() {
       return `<div class="match-card">
         <div class="match-top">
           <span class="match-num">${m.id}</span>
-          <span class="match-title">${m.home} vs ${m.away}</span>
+          <span class="match-title">${m.flag_h} ${m.home} vs ${m.flag_a} ${m.away}</span>
           ${winner?`<span class="result-pill">✓ ${winner}</span>`:`<span class="pending-pill">⏳ pendiente</span>`}
         </div>
         <div class="preds-grid">
